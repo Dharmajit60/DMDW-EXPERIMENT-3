@@ -1,0 +1,361 @@
+import pandas as pd
+ import numpy as np
+ import seaborn as sbs
+ import matplotlib.pyplot as plt
+
+
+Code cell <UM8bnDUD0wUU>
+# %% [code]
+ df=pd.read_csv("/content/student-mat.csv1.csv",sep=',')
+
+Code cell <4Gh34AOx1c7M>
+# %% [code]
+df.head()
+Execution output from Aug 16, 2023 11:03 AM
+10KB
+	text/plain
+		school sex  age address famsize Pstatus  Medu  Fedu     Mjob      Fjob  ...  \
+		0     GP   F   18       U     GT3       A     4     4  at_home   teacher  ...   
+		1     GP   F   17       U     GT3       T     1     1  at_home     other  ...   
+		2     GP   F   15       U     LE3       T     1     1  at_home     other  ...   
+		3     GP   F   15       U     GT3       T     4     2   health  services  ...   
+		4     GP   F   16       U     GT3       T     3     3    other     other  ...   
+		
+		  famrel freetime  goout  Dalc  Walc health absences  G1  G2  G3  
+		0      4        3      4     1     1      3        6   5   6   6  
+		1      5        3      3     1     1      3        4   5   5   6  
+		2      4        3      2     2     3      3       10   7   8  10  
+		3      3        2      2     1     1      5        2  15  14  15  
+		4      4        3      2     1     2      5        4   6  10  10  
+		
+		[5 rows x 33 columns]
+
+Code cell <dacGB0gm1iFG>
+# %% [code]
+dfs=df[['schoolsup','famsup','paid','activities','nursery','higher','internet','romantic']]
+
+Code cell <2u0w4ooN1wHe>
+# %% [code]
+dfs.head()
+Execution output from Aug 16, 2023 11:05 AM
+8KB
+	text/plain
+		schoolsup famsup paid activities nursery higher internet romantic
+		0       yes     no   no         no     yes    yes       no       no
+		1        no    yes   no         no      no    yes      yes       no
+		2       yes     no  yes         no     yes    yes      yes       no
+		3        no    yes  yes        yes     yes    yes      yes      yes
+		4        no    yes  yes         no     yes    yes       no       no
+
+Code cell <vHq7KazP1407>
+# %% [code]
+df.info()
+Execution output from Aug 16, 2023 11:05 AM
+2KB
+	Stream
+		<class 'pandas.core.frame.DataFrame'>
+		RangeIndex: 395 entries, 0 to 394
+		Data columns (total 33 columns):
+		 #   Column      Non-Null Count  Dtype 
+		---  ------      --------------  ----- 
+		 0   school      395 non-null    object
+		 1   sex         395 non-null    object
+		 2   age         395 non-null    int64 
+		 3   address     395 non-null    object
+		 4   famsize     395 non-null    object
+		 5   Pstatus     395 non-null    object
+		 6   Medu        395 non-null    int64 
+		 7   Fedu        395 non-null    int64 
+		 8   Mjob        395 non-null    object
+		 9   Fjob        395 non-null    object
+		 10  reason      395 non-null    object
+		 11  guardian    395 non-null    object
+		 12  traveltime  395 non-null    int64 
+		 13  studytime   395 non-null    int64 
+		 14  failures    395 non-null    int64 
+		 15  schoolsup   395 non-null    object
+		 16  famsup      395 non-null    object
+		 17  paid        395 non-null    object
+		 18  activities  395 non-null    object
+		 19  nursery     395 non-null    object
+		 20  higher      395 non-null    object
+		 21  internet    395 non-null    object
+		 22  romantic    395 non-null    object
+		 23  famrel      395 non-null    int64 
+		 24  freetime    395 non-null    int64 
+		 25  goout       395 non-null    int64 
+		 26  Dalc        395 non-null    int64 
+		 27  Walc        395 non-null    int64 
+		 28  health      395 non-null    int64 
+		 29  absences    395 non-null    int64 
+		 30  G1          395 non-null    int64 
+		 31  G2          395 non-null    int64 
+		 32  G3          395 non-null    int64 
+		dtypes: int64(16), object(17)
+		memory usage: 102.0+ KB
+
+Code cell <LvWhZELY187s>
+# %% [code]
+dfs=dfs.replace('no', 0)
+dfs=dfs.replace('yes',1)
+
+
+Code cell <ZjIdzE6E2Bnk>
+# %% [code]
+ dfs.head()
+Execution output from Aug 16, 2023 11:06 AM
+8KB
+	text/plain
+		schoolsup  famsup  paid  activities  nursery  higher  internet  romantic
+		0          1       0     0           0        1       1         0         0
+		1          0       1     0           0        0       1         1         0
+		2          1       0     1           0        1       1         1         0
+		3          0       1     1           1        1       1         1         1
+		4          0       1     1           0        1       1         0         0
+
+Code cell <ptRyyyMW2ICf>
+# %% [code]
+dfs.info()
+Execution output from Aug 16, 2023 11:06 AM
+1KB
+	Stream
+		<class 'pandas.core.frame.DataFrame'>
+		RangeIndex: 395 entries, 0 to 394
+		Data columns (total 8 columns):
+		 #   Column      Non-Null Count  Dtype
+		---  ------      --------------  -----
+		 0   schoolsup   395 non-null    int64
+		 1   famsup      395 non-null    int64
+		 2   paid        395 non-null    int64
+		 3   activities  395 non-null    int64
+		 4   nursery     395 non-null    int64
+		 5   higher      395 non-null    int64
+		 6   internet    395 non-null    int64
+		 7   romantic    395 non-null    int64
+		dtypes: int64(8)
+		memory usage: 24.8 KB
+
+Code cell <AIJgKKfL2Mgp>
+# %% [code]
+n=np.array(dfs[['schoolsup','famsup']])
+n=n.reshape(-1,2)
+n.shape
+
+Execution output from Aug 16, 2023 11:07 AM
+0KB
+	text/plain
+		(395, 2)
+
+Code cell <LMg2TFO12SuF>
+# %% [code]
+m=np.array(dfs[['romantic','internet']])
+m=m.reshape(-1,2)
+m.shape
+
+Execution output from Aug 16, 2023 11:07 AM
+0KB
+	text/plain
+		(395, 2)
+
+Code cell <oaRKPnIx2YRM>
+# %% [code]
+from scipy.spatial import distance
+dist_matrix = distance.cdist(n,m)
+
+
+Code cell <PowXbDiD2dfF>
+# %% [code]
+dist_matrix.shape
+Execution output from Aug 16, 2023 11:08 AM
+0KB
+	text/plain
+		(395, 395)
+
+Code cell <TeKXjPBv2hSw>
+# %% [code]
+sbs.heatmap(dist_matrix)
+plt.show()
+
+Execution output from Aug 16, 2023 11:08 AM
+56KB
+	text/plain
+		<Figure size 640x480 with 2 Axes>
+
+Code cell <FWxthY6l2nZQ>
+# %% [code]
+numeric=df[['age','Medu','Fedu','traveltime','studytime','failures']]
+
+Code cell <eLtyvVWW2xE9>
+# %% [code]
+numeric.head()
+Execution output from Aug 16, 2023 11:09 AM
+7KB
+	text/plain
+		age  Medu  Fedu  traveltime  studytime  failures
+		0   18     4     4           2          2         0
+		1   17     1     1           1          2         0
+		2   15     1     1           1          2         3
+		3   15     4     2           1          3         0
+		4   16     3     3           1          2         0
+
+Code cell <hDgcFtS720d->
+# %% [code]
+numeric.info()
+Execution output from Aug 16, 2023 11:09 AM
+1KB
+	Stream
+		<class 'pandas.core.frame.DataFrame'>
+		RangeIndex: 395 entries, 0 to 394
+		Data columns (total 6 columns):
+		 #   Column      Non-Null Count  Dtype
+		---  ------      --------------  -----
+		 0   age         395 non-null    int64
+		 1   Medu        395 non-null    int64
+		 2   Fedu        395 non-null    int64
+		 3   traveltime  395 non-null    int64
+		 4   studytime   395 non-null    int64
+		 5   failures    395 non-null    int64
+		dtypes: int64(6)
+		memory usage: 18.6 KB
+
+Code cell <6XTlRR4N245w>
+# %% [code]
+num1=np.array(numeric[['age','failures']])
+num1.reshape(-1,2)
+num1.shape
+
+Execution output from Aug 16, 2023 11:10 AM
+0KB
+	text/plain
+		(395, 2)
+
+Code cell <UsLKq-rh2-Q7>
+# %% [code]
+num2=np.array(numeric[['Fedu','Medu']])
+num2.reshape(-1,2)
+num2.shape
+
+Execution output from Aug 16, 2023 11:10 AM
+0KB
+	text/plain
+		(395, 2)
+
+Code cell <L-NP7nkR3D7v>
+# %% [code]
+ from scipy.spatial import distance
+ dist_matrix = distance.cdist(num1,num2)
+
+
+Code cell <OdIVajiU3JI9>
+# %% [code]
+dist_matrix.shape
+Execution output from Aug 16, 2023 11:11 AM
+0KB
+	text/plain
+		(395, 395)
+
+Code cell <19JSZoeH3PY7>
+# %% [code]
+sbs.heatmap(dist_matrix)
+Execution output from Aug 16, 2023 11:11 AM
+171KB
+	text/plain
+		<Axes: >
+		<Figure size 640x480 with 2 Axes>
+
+Code cell <-khgnm_H3Uqn>
+# %% [code]
+nominal=df[['Mjob','Fjob','reason','guardian']]
+nominal=nominal.replace('at_home','home')
+nominal=(nominal.astype('category'))
+
+
+Code cell <y1IrvKk23bS9>
+# %% [code]
+from sklearn.preprocessing import LabelEncoder
+lb=LabelEncoder()
+
+
+Code cell <YQixlbd23kiy>
+# %% [code]
+nominal['guardian']=lb.fit_transform(nominal['guardian'])
+
+Code cell <E7Fnk83I3rUR>
+# %% [code]
+ nominal['Mjob']=lb.fit_transform(nominal['Mjob'])
+
+Code cell <HcXlSBCx3vXM>
+# %% [code]
+ nominal['Fjob']=lb.fit_transform(nominal['Fjob'])
+
+Code cell <rubSLMWz31K_>
+# %% [code]
+nominal['reason']=lb.fit_transform(nominal['reason'])
+
+Code cell <jrndhC0N34ZJ>
+# %% [code]
+nominal.head()
+Execution output from Aug 16, 2023 11:14 AM
+7KB
+	text/plain
+		Mjob  Fjob  reason  guardian
+		0     1     4       0         1
+		1     1     2       0         0
+		2     1     2       2         1
+		3     0     3       1         1
+		4     2     2       1         0
+
+Code cell <DsDf4fde37oH>
+# %% [code]
+nom1=np.array(nominal)
+nom1.reshape(-1,2)
+
+Execution output from Aug 16, 2023 11:14 AM
+0KB
+	text/plain
+		array([[1, 4],
+		       [0, 1],
+		       [1, 2],
+		       ...,
+		       [0, 1],
+		       [2, 1],
+		       [0, 0]])
+
+Code cell <vKkWI79a4Acs>
+# %% [code]
+nom2=np.array(nominal)
+nom2.reshape(-1,2)
+
+Execution output from Aug 16, 2023 11:15 AM
+0KB
+	text/plain
+		array([[1, 4],
+		       [0, 1],
+		       [1, 2],
+		       ...,
+		       [0, 1],
+		       [2, 1],
+		       [0, 0]])
+
+Code cell <a74eifvM4Eor>
+# %% [code]
+from scipy.spatial import distance
+dist_matrix = distance.cdist(nom1,nom2)
+
+
+Code cell <6okwrX6b4JXp>
+# %% [code]
+sbs.heatmap(dist_matrix)
+Execution output from Aug 16, 2023 11:15 AM
+365KB
+	text/plain
+		<Axes: >
+		<Figure size 640x480 with 2 Axes>
+
+Code cell <ONzjMKTU4NMD>
+# %% [code]
+dist_matrix.shape
+Execution output from Aug 16, 2023 11:15 AM
+0KB
+	text/plain
+		(395, 395)
